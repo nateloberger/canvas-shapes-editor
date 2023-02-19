@@ -14,7 +14,8 @@ class Circle {
 function App() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [shapes, setShapes] = React.useState<Circle[]>([]);
-  const [selectedShapes, setSelectedShapes] = React.useState<number[]>([])
+  const [selectedShapes, setSelectedShapes] = React.useState<number[]>([]);
+  const dragging = React.useRef(false);
   // const shapes: Array<Circle> = [];
 
   const drawCircle = (circle: Circle) => {
@@ -60,7 +61,7 @@ function App() {
   }, [shapes])
 
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const {x: canvasX, y: canvasY} = e.currentTarget.getBoundingClientRect();
+    const { x: canvasX, y: canvasY } = e.currentTarget.getBoundingClientRect();
     const positionX = e.clientX - canvasX;
     const positionY = e.clientY - canvasY;
     // console.log(positionX, positionY);
@@ -79,6 +80,40 @@ function App() {
     setSelectedShapes(clickedShape !== -1 ? [clickedShape] : [])
   }
 
+  const handleMouseDown = () => {
+    if (selectedShapes.length) {
+      dragging.current = true;
+    }
+  }
+
+  const handleMouseUp = () => {
+    dragging.current = false;
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // TODO - click bug..
+    if (dragging.current && selectedShapes.length) {
+      const { x: canvasX, y: canvasY } = e.currentTarget.getBoundingClientRect();
+      const positionX = e.clientX - canvasX;
+      const positionY = e.clientY - canvasY;
+
+      const i = selectedShapes[0];
+      const shape = shapes[i];
+
+      const newShape = {
+        ...shape,
+        x: positionX,
+        y: positionY,
+      };
+
+      const shapesCopy = [...shapes];
+      shapesCopy[i] = newShape;
+
+      setShapes(shapesCopy);
+
+    }
+  }
+
   return (
     <div className="App">
       <div>
@@ -87,7 +122,16 @@ function App() {
         <button onClick={addRectangle}>Add Rectangle</button>
       </div>
       <div>
-        <canvas ref={canvasRef} height="500" width="500" onClick={handleClick}></canvas>
+        <canvas
+          ref={canvasRef}
+          height="500"
+          width="500"
+          onClick={handleClick}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+        </canvas>
 
       </div>
       <div className="flex flex-direction-column">
@@ -117,7 +161,7 @@ function App() {
               </div>
               <div className="property">
                 <div>radius</div>
-                <input type="range" value={shape.radius}
+                <input type="range" min={1} value={shape.radius}
                   onChange={(e) => {
                     const newShape = {
                       ...shape,
@@ -134,6 +178,7 @@ function App() {
               <div className="property">
                 <div>color</div>
                 <input type="color"
+                  value={shape.color}
                   onChange={(e) => {
                     const newShape = {
                       ...shape,
