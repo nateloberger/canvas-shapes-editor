@@ -15,17 +15,19 @@ function App() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [shapes, setShapes] = React.useState<Circle[]>([]);
   const [selectedShapes, setSelectedShapes] = React.useState<number[]>([]);
+  const [hoverShape, setHoverShape] = React.useState<number>(-1);
   const dragging = React.useRef(false);
   // const shapes: Array<Circle> = [];
 
-  const drawCircle = (circle: Circle) => {
+  const drawCircle = (circle: Circle, outline = false) => {
     const ctx = canvasRef.current?.getContext("2d");
 
     if (ctx) {
       ctx.beginPath();
       ctx.fillStyle = circle.color;
+      ctx.strokeStyle = circle.color;
       ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-      ctx.fill();
+      outline ? ctx.stroke() : ctx.fill();
       ctx.closePath();
     }
   }
@@ -54,21 +56,27 @@ function App() {
     if (canvasRef.current && ctx) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
       shapes.forEach((shape) => {
-        // shape.radius ? drawCircle(shape) : d
         drawCircle(shape);
       });
-    }
-  }, [shapes])
 
-  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (hoverShape > -1) {
+        const shape = shapes[hoverShape];
+        drawCircle(new Circle(shape.x, shape.y, shape.radius + 2, 'purple'), true);
+      }
+
+      selectedShapes.forEach(i => {
+        const shape = shapes[i];
+        drawCircle(new Circle(shape.x, shape.y, shape.radius + 4, 'orange'), true);
+      })
+    }
+  }, [shapes, hoverShape, selectedShapes])
+
+  const mouseInShape = (e: React.MouseEvent) => {
     const { x: canvasX, y: canvasY } = e.currentTarget.getBoundingClientRect();
     const positionX = e.clientX - canvasX;
     const positionY = e.clientY - canvasY;
-    // console.log(positionX, positionY);
 
-
-
-    const clickedShape = shapes.findIndex((shape) => {
+    return shapes.findIndex((shape) => {
       const diffX = Math.abs(shape.x - positionX);
       const diffY = Math.abs(shape.y - positionY);
 
@@ -77,7 +85,11 @@ function App() {
       return distanceToOrigin <= shape.radius;
     });
 
-    setSelectedShapes(clickedShape !== -1 ? [clickedShape] : [])
+  }
+
+  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const hoveredShape = mouseInShape(e);
+    setSelectedShapes(hoveredShape !== -1 ? [hoveredShape] : []);
   }
 
   const handleMouseDown = () => {
@@ -97,6 +109,8 @@ function App() {
       const positionX = e.clientX - canvasX;
       const positionY = e.clientY - canvasY;
 
+      // console.log(positionX, e.nativeEvent.offsetX);
+
       const i = selectedShapes[0];
       const shape = shapes[i];
 
@@ -111,6 +125,8 @@ function App() {
 
       setShapes(shapesCopy);
 
+    } else if (shapes.length) {
+      setHoverShape(mouseInShape(e));
     }
   }
 
