@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Shape } from './models';
+import { Shape, Circle, Rectangle } from './models';
 import { Canvas } from './Canvas';
 import { ShapeEditor } from './ShapeEditor';
 
@@ -18,13 +18,10 @@ function App() {
   }
 
   const addRectangle = () => {
-    // const ctx = canvasRef.current?.getContext("2d");
-    // if (!ctx) {
-    //   return;
-    // }
-
-    // ctx.fillStyle = 'blue';
-    // ctx.fillRect(30, 30, 30, 30)
+    setShapes([
+      ...shapes,
+      new Rectangle(),
+    ]);
   }
 
   return (
@@ -41,11 +38,10 @@ function App() {
           onShapeSelected={setSelectedShapes}
           onShapeMove={(i, x, y) => {
             const shapesCopy = [...shapes];
-            shapesCopy[i] = {
-              ...shapes[i],
-              x,
-              y,
-            };
+            const shapeCopy = shapes[i].clone();
+            shapeCopy.x = x;
+            shapeCopy.y = y;
+            shapesCopy[i] = shapeCopy;
 
             setShapes(shapesCopy);
           }}

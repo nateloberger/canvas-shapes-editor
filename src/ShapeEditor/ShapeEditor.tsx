@@ -1,60 +1,34 @@
 import React from 'react';
-import { Circle } from '../models/Circle';
+import { Shape, Circle, Rectangle } from '../models';
+import { CircleEditor } from './CircleEditor';
+import { RectangleEditor } from './RectangleEditor';
 
 export type ShapeEditorProps = {
-  shape: Circle;
-  onChange: (newShape: Circle) => void;
+  shape: Shape;
+  onChange: (newShape: Shape) => void;
   onDelete: () => void;
 };
 
 export function ShapeEditor(props: ShapeEditorProps) {
-  const handleRadiusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onChange({
-      ...props.shape,
-      radius: Number(e.currentTarget.value),
-    });
-  };
+  if (props.shape instanceof Circle) {
+    return (
+      <CircleEditor
+        circle={props.shape}
+        onChange={props.onChange}
+        onDelete={props.onDelete}
+      />
+    );
+  }
 
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onChange({
-      ...props.shape,
-      color: e.currentTarget.value,
-    });
-  };
+  if (props.shape instanceof Rectangle) {
+    return (
+      <RectangleEditor
+        rectangle={props.shape}
+        onChange={props.onChange}
+        onDelete={props.onDelete}
+      />
+    );
+  }
 
-  return (
-    <div>
-      <div className="property">
-        <button onClick={props.onDelete}>
-          Delete
-        </button>
-        <span>Circle</span>
-      </div>
-      <div className="property">
-        <div>center x</div>
-        <div>{props.shape.x}</div>
-      </div>
-      <div className="property">
-        <div>center y</div>
-        <div>{props.shape.y}</div>
-      </div>
-      <div className="property">
-        <div>radius</div>
-        <input
-          type="range"
-          min="1"
-          value={props.shape.radius}
-          onChange={handleRadiusChange}
-        />
-      </div>
-      <div className="property">
-        <div>color</div>
-        <input
-          type="color"
-          value={props.shape.color}
-          onChange={handleColorChange}
-        />
-      </div>
-    </div>
-  );
+  return null;
 }

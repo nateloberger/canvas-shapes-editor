@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Shape } from '../models';
+import { Circle, Rectangle, Shape } from '../models';
 
 export type CanvasProps = {
   shapes: Shape[];
@@ -26,6 +26,18 @@ export function Canvas(props: CanvasProps) {
     }
   }
 
+  const drawRectangle = (rect: Rectangle, outline = false) => {
+    const ctx = canvasRef.current?.getContext("2d");
+
+    if (ctx) {
+      ctx.fillStyle = rect.color;
+      ctx.strokeStyle = rect.color;
+      outline ?
+        ctx.strokeRect(rect.x, rect.y, rect.width, rect.height)
+        : ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+    }
+  }
+
   // Draw
   React.useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
@@ -33,17 +45,32 @@ export function Canvas(props: CanvasProps) {
     if (canvasRef.current && ctx) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
       props.shapes.forEach((shape) => {
-        drawCircle(shape);
+        if (shape instanceof Circle) {
+          drawCircle(shape);
+        }
+        else if (shape instanceof Rectangle) {
+          drawRectangle(shape);
+        }
       });
 
       if (hoverShape > -1) {
         const shape = props.shapes[hoverShape];
-        drawCircle(new Circle(shape.x, shape.y, shape.radius + 2, 'purple'), true);
+        if (shape instanceof Circle) {
+          drawCircle(new Circle(shape.x, shape.y, shape.radius + 2, 'purple'), true);
+        }
+        else if (shape instanceof Rectangle) {
+          drawRectangle(new Rectangle(shape.x - 1, shape.y - 1 , shape.width + 2, shape.height + 2, 'purple'), true);
+        }
       }
 
       props.selectedShapes.forEach(i => {
         const shape = props.shapes[i];
-        drawCircle(new Circle(shape.x, shape.y, shape.radius + 4, 'orange'), true);
+        if (shape instanceof Circle) {
+          drawCircle(new Circle(shape.x, shape.y, shape.radius + 4, 'orange'), true);
+        }
+        else if (shape instanceof Rectangle) {
+          drawRectangle(new Rectangle(shape.x - 1, shape.y - 1 , shape.width + 2, shape.height + 2, 'orange'), true);
+        }
       })
     }
   }, [props.shapes, hoverShape, props.selectedShapes])
@@ -52,11 +79,7 @@ export function Canvas(props: CanvasProps) {
     const { offsetX, offsetY } = e.nativeEvent;
 
     return props.shapes.findIndex((shape) => {
-      const diffX = Math.abs(shape.x - offsetX);
-      const diffY = Math.abs(shape.y - offsetY);
-      const distanceFromOrigin = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
-
-      return distanceFromOrigin <= shape.radius;
+      return shape.pointInShape(offsetX, offsetY);
     });
   }
 
