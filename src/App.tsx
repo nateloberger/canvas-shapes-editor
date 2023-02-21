@@ -7,20 +7,21 @@ import './App.css';
 
 function App() {
   const [shapes, setShapes] = React.useState<Shape[]>([]);
-  const [selectedShapes, setSelectedShapes] = React.useState<number[]>([]);
+  const [mouseDown, setMouseDown] = React.useState(false);
+  const newShapeIdRef = React.useRef(0);
+  const selectedShapes = shapes.filter(s => s.selected);
 
   const addCircle = () => {
-    const p = shapes.length * 10;
     setShapes([
       ...shapes,
-      new Circle(p, p),
+      new Circle(newShapeIdRef.current++, 50, 50),
     ])
   }
 
   const addRectangle = () => {
     setShapes([
       ...shapes,
-      new Rectangle(),
+      new Rectangle(newShapeIdRef.current++, 75, 75),
     ]);
   }
 
@@ -34,34 +35,78 @@ function App() {
       <div>
         <Canvas
           shapes={shapes}
-          selectedShapes={selectedShapes}
-          onShapeSelected={setSelectedShapes}
-          onShapeMove={(i, x, y) => {
-            const shapesCopy = [...shapes];
-            const shapeCopy = shapes[i].clone();
-            shapeCopy.x = x;
-            shapeCopy.y = y;
-            shapesCopy[i] = shapeCopy;
+          onMouseDown={e => {
+            setMouseDown(true);
 
-            setShapes(shapesCopy);
+            const clickedShape = shapes.find(s => {
+              return s.pointInShape(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+            });
+
+            if (clickedShape) {
+              if (clickedShape.selected) {
+                return;
+              }
+
+              setShapes(shapes.map(s => {
+                const shapeCopy = s.clone();
+                shapeCopy.selected = false;
+
+                if (clickedShape === s || (s.selected && e.shiftKey)) {
+                  shapeCopy.selected = true;
+                }
+
+                return shapeCopy;
+              }));
+            }
+            else if (selectedShapes.length) {
+              setShapes(shapes.map(s => {
+                if (s.selected) {
+                  const shapeCopy = s.clone();
+                  shapeCopy.selected = false;
+                  return shapeCopy;
+                }
+
+                return s;
+              }));
+            }
+          }}
+          onMouseUp={e => {
+            setMouseDown(false);
+          }}
+          onMouseMove={e => {
+            if (mouseDown && selectedShapes.length) {
+              setShapes(shapes.map(s => {
+                if (!s.selected) {
+                  return s;
+                }
+
+                const shapeCopy = s.clone();
+                shapeCopy.x += e.movementX;
+                shapeCopy.y += e.movementY;
+
+                return shapeCopy;
+              }));
+            }
           }}
         />
       </div>
       <div className="flex flex-direction-column">
-        {selectedShapes.map((i) => {
-          const shape = shapes[i];
+        {selectedShapes.map((shape) => {
           return (
             <ShapeEditor
+              key={shape.id}
               shape={shape}
-              onChange={(newShape) => {
-                const shapesCopy = [...shapes];
-                shapesCopy[i] = newShape;
+              onChange={(editedShape) => {
+                setShapes(shapes.map(s => {
+                  if (s === shape) {
+                    return editedShape;
+                  }
 
-                setShapes(shapesCopy);
+                  return s;
+                }));
               }}
               onDelete={() => {
                 setShapes(shapes.filter(s => s !== shape));
-                setSelectedShapes([]);
               }}
             />
           )

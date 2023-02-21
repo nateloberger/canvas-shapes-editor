@@ -5,7 +5,7 @@ import { RectangleEditor } from './RectangleEditor';
 
 export type ShapeEditorProps = {
   shape: Shape;
-  onChange: (newShape: Shape) => void;
+  onChange: (editedShape: Shape) => void;
   onDelete: () => void;
 };
 

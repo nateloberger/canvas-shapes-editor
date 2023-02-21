@@ -46,7 +46,7 @@ export function RectangleEditor(props: RectangleEditorProps) {
         <div>width</div>
         <input
           type="range"
-          min="1"
+          min="5"
           value={props.rectangle.width}
           onChange={handleWidthChange}
         />
@@ -55,7 +55,7 @@ export function RectangleEditor(props: RectangleEditorProps) {
         <div>height</div>
         <input
           type="range"
-          min="1"
+          min="5"
           value={props.rectangle.height}
           onChange={handleHeightChange}
         />
