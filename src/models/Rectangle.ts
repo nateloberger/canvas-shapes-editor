@@ -35,6 +35,6 @@ export class Rectangle extends Shape {
   }
 
   public clone() {
-    return new Rectangle(this.id, this.x, this.y, this.width, this.height);
+    return new Rectangle(this.id, this.x, this.y, this.width, this.height, this.color);
   }
 }
