@@ -3,6 +3,8 @@ import { Shape, Circle, Rectangle } from '../models';
 import { CircleEditor } from './CircleEditor';
 import { RectangleEditor } from './RectangleEditor';
 
+import './ShapeEditor.css';
+
 export type ShapeEditorProps = {
   shape: Shape;
   onChange: (editedShape: Shape) => void;

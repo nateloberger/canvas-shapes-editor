@@ -99,9 +99,9 @@ function App() {
   return (
     <div className="App">
       <div>
-        <button onClick={addCircle}>Add Circle</button>
+        <button className="w-100" onClick={addCircle}>Add Circle</button>
         <br />
-        <button onClick={addRectangle}>Add Rectangle</button>
+        <button className="w-100" onClick={addRectangle}>Add Rectangle</button>
       </div>
       <div>
         <Canvas

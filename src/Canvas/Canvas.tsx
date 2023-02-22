@@ -1,6 +1,8 @@
 import React from 'react';
 import { Shape } from '../models';
 
+import './Canvas.css';
+
 export type CanvasProps = {
   shapes: Shape[];
   selectedShapes: Shape[];

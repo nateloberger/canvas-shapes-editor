@@ -1,0 +1,13 @@
+.editor {
+  min-width: 250px;
+  border-top: 2px solid black;
+}
+
+.property {
+  display: flex;
+}
+
+.property > * {
+  width: 50%;
+  text-align: center;
+}

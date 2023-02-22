@@ -27,10 +27,10 @@ export function RectangleEditor(props: RectangleEditorProps) {
   };
 
   return (
-    <div>
+    <div className="editor">
       <div className="property">
-        <button onClick={props.onDelete}>
-          Delete
+        <button onClick={props.onDelete} aria-label="Delete">
+          🗑
         </button>
         <span>Rectangle</span>
       </div>
@@ -62,11 +62,13 @@ export function RectangleEditor(props: RectangleEditorProps) {
       </div>
       <div className="property">
         <div>color</div>
-        <input
-          type="color"
-          value={props.rectangle.color}
-          onChange={handleColorChange}
-        />
+        <div>
+          <input
+            type="color"
+            value={props.rectangle.color}
+            onChange={handleColorChange}
+          />
+        </div>
       </div>
     </div>
   );

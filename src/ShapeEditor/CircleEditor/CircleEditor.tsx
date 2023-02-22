@@ -21,10 +21,10 @@ export function CircleEditor(props: CircleEditorProps) {
   };
 
   return (
-    <div>
+    <div className="editor">
       <div className="property">
-        <button onClick={props.onDelete}>
-          Delete
+        <button onClick={props.onDelete} aria-label="Delete">
+          🗑
         </button>
         <span>Circle</span>
       </div>
@@ -47,11 +47,13 @@ export function CircleEditor(props: CircleEditorProps) {
       </div>
       <div className="property">
         <div>color</div>
-        <input
-          type="color"
-          value={props.circle.color}
-          onChange={handleColorChange}
-        />
+        <div>
+          <input
+            type="color"
+            value={props.circle.color}
+            onChange={handleColorChange}
+          />
+        </div>
       </div>
     </div>
   );
