@@ -1,6 +1,7 @@
-# Getting Started with Create React App
+# Shape Toy Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This a simple shape editor built with canvas. For more details on the requirements followed see:
+https://share.nuclino.com/p/-Shape-Toy-Prompt-1cdLhB_4RczRRLIOtfJwWY
 
 ## Available Scripts
 
