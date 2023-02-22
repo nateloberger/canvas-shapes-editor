@@ -3,6 +3,8 @@ import { Shape } from '../models';
 
 export type CanvasProps = {
   shapes: Shape[];
+  selectedShapes: Shape[];
+  hoveredShape?: Shape;
   onMouseDown: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onMouseUp: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onMouseMove: (e: React.MouseEvent<HTMLCanvasElement>) => void;
@@ -10,7 +12,6 @@ export type CanvasProps = {
 
 export function Canvas(props: CanvasProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const [hoveredShapeId, setHoveredShapeId] = React.useState<number>();
 
   // Canvas render function
   React.useEffect(() => {
@@ -28,22 +29,16 @@ export function Canvas(props: CanvasProps) {
     props.shapes.forEach(shape => {
       shape.draw(ctx);
 
-      if (shape.id === hoveredShapeId) {
+      if (shape === props.hoveredShape) {
         shape.drawHoverIndicator(ctx);
+      }
+
+      if (props.selectedShapes.find(s => s === shape)) {
+        shape.drawSelectedIndicator(ctx);
       }
     });
 
-  }, [props.shapes, hoveredShapeId]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const hoveredShape = props.shapes.find(s => {
-      return s.pointInShape(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    });
-
-    setHoveredShapeId(hoveredShape?.id);
-
-    props.onMouseMove(e);
-  }
+  }, [props.shapes, props.hoveredShape, props.selectedShapes]);
 
   return (
     <canvas
@@ -52,7 +47,7 @@ export function Canvas(props: CanvasProps) {
       width="500"
       onMouseDown={props.onMouseDown}
       onMouseUp={props.onMouseUp}
-      onMouseMove={handleMouseMove}
+      onMouseMove={props.onMouseMove}
     >
     </canvas>
   );

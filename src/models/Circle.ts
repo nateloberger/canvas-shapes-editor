@@ -6,8 +6,6 @@ export class Circle extends Shape {
     public y: number = 0,
     public radius = 20,
     public color: string = '#000000',
-    public selected: boolean = false,
-    public hovered: boolean = false,
   ) {
     super(id, x, y, color);
   }
@@ -26,25 +24,25 @@ export class Circle extends Shape {
     ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
-
-    if (this.selected) {
-      ctx.beginPath();
-      ctx.strokeStyle = 'orange';
-      ctx.arc(this.x, this.y, this.radius + 4, 0, 2 * Math.PI);
-      ctx.stroke();
-      ctx.closePath();
-    }
   }
 
   public drawHoverIndicator(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath();
-    ctx.strokeStyle = 'purple';
+    ctx.strokeStyle = 'purple'; // TODO - supposed to be semi transparent and could move to Shape class.
     ctx.arc(this.x, this.y, this.radius + 2, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.closePath();
   }
 
+  public drawSelectedIndicator(ctx: CanvasRenderingContext2D): void {
+    ctx.beginPath();
+    ctx.strokeStyle = 'orange';
+    ctx.arc(this.x, this.y, this.radius + 4, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.closePath();
+  }
+
   public clone(): Circle {
-    return new Circle(this.id, this.x, this.y, this.radius, this.color, this.selected, this.hovered);
+    return new Circle(this.id, this.x, this.y, this.radius, this.color);
   }
 }
